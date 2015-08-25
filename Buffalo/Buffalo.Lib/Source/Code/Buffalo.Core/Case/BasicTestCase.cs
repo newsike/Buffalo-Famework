@@ -62,6 +62,12 @@ namespace Buffalo.Core.Case
             get;
         }
 
+        public WebDriver.WebBrowserActions ActionWebBrowserActionsObject
+        {
+            set;
+            get;
+        }
+
         public ElementActions.ElementActions ActiveElementActionObject
         {
             set;

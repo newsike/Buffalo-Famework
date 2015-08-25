@@ -18,7 +18,15 @@ namespace Buffalo.Core.CodeProcessor
             return new Case.CaseMethodItem();
         }
 
-        public static void CodeTransmit_Action_Connect(WebDriver.WebBrowserDriver refWebBrowserDriver,CodeLine activeSelectLine)
+        public static void CodeTransmit_Action_Case(Case.BasicTestCase refTestCase, CodeLine activeSelectLine)        
+        {
+            if (activeSelectLine.KeyCode == Container.KeyWordMap.Case)
+            {
+
+            }
+        }
+
+        public static void CodeTransmit_Action_Connect(Case.BasicTestCase refTestCase, WebDriver.WebBrowserDriver refWebBrowserDriver,CodeLine activeSelectLine)
         {
             if (activeSelectLine.KeyCode == Container.KeyWordMap.Connect)
             {
@@ -45,6 +53,8 @@ namespace Buffalo.Core.CodeProcessor
                         }
                     }
                 }
+                refTestCase.ActionWebBrowserActionsObject = new WebDriver.WebBrowserActions(refWebBrowserDriver.ActiveWebDriver);
+                refTestCase.ActiveWebBrowserDriverObject = refWebBrowserDriver;
             }
         }
 
@@ -55,13 +65,21 @@ namespace Buffalo.Core.CodeProcessor
                 refCaseMethodItemObj.Index = activeSelectLine.CodeIndex;
                 refCaseMethodItemObj.ActiveMethod = new ElementActions.MethodItem();
                 refCaseMethodItemObj.ActiveMethod.ActiveType = typeof(WebDriver.WebBrowserActions);
+                refActiveCase.ActiveCaseMethodPool.Add(refCaseMethodItemObj.Index,refCaseMethodItemObj);
                 object[] methodParam;
                 foreach (string paramName in activeSelectLine.ParamsPool.Keys)
                 {
                     switch (paramName)
                     {
                         case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_StartBrowser:
-
+                            refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_StartBrowser);
+                            if (activeSelectLine.ParamsPool[paramName] != Container.KeyWordMap.Null)
+                            {
+                                methodParam = new object[] { activeSelectLine.ParamsPool[paramName] };
+                                refCaseMethodItemObj.ActiveMethod.MethodParams = methodParam;
+                            }
+                            break;
+                        case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_SwitchToWindow:
                             break;
                     }
                 }
@@ -75,6 +93,7 @@ namespace Buffalo.Core.CodeProcessor
                 refCaseMethodItemObj.Index = activeSelectLine.CodeIndex;
                 refCaseMethodItemObj.ActiveMethod = new ElementActions.MethodItem();
                 refCaseMethodItemObj.ActiveMethod.ActiveType = typeof(ElementActions.ElementActions);
+                refActiveCase.ActiveCaseMethodPool.Add(refCaseMethodItemObj.Index, refCaseMethodItemObj);
                 object[] methodParam;
                 foreach (string paramName in activeSelectLine.ParamsPool.Keys)
                 {
@@ -109,6 +128,7 @@ namespace Buffalo.Core.CodeProcessor
             {
                 Case.CaseContentItem newCaseContentItem = refCaseContentItemObj;
                 newCaseContentItem.Index = activeSelectLine.CodeIndex;
+                refActiveCase.ActiveCaseContentPool.Add(newCaseContentItem.Index, newCaseContentItem);
                 foreach (string paramName in activeSelectLine.ParamsPool.Keys)
                 {
                     switch (paramName)

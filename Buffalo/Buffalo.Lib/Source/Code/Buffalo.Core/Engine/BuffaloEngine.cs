@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 
 namespace Buffalo.Core.Engine
@@ -45,11 +46,24 @@ namespace Buffalo.Core.Engine
                     {
                         Case.CaseContentItem caseContent = Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_CreateContentInstance();
                         Case.CaseMethodItem caseMethod = Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_CreateMethodInstance();
-                        Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_Connect(_Obj_WebBrowserDriver, _Obj_Scaner.CodePool[codeIndex]);
+                        Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_Connect(testCase, _Obj_WebBrowserDriver, _Obj_Scaner.CodePool[codeIndex]);
                         Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_Select(caseContent, testCase, _Obj_Scaner.CodePool[codeIndex]);
                         Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_Action(caseMethod, testCase, _Obj_Scaner.CodePool[codeIndex]);                        
-                    }                    
+                    }
+                    if (!_Pool_TestCase.ContainsKey(idCase))
+                        _Pool_TestCase.Add(idCase, testCase);
+                }
+                Thread.Sleep(100);
+            }
+        }
 
+        public void Action_InvokeTestCase()
+        {
+            while(true)
+            {
+                if(_Pool_TestCase.Count>0)
+                {
+                    Case.BasicTestCase activeCase=_Pool_TestCase[]
                 }
             }
         }
