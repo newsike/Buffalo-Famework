@@ -60,6 +60,15 @@ namespace Buffalo.Core.ElementActions
             }
         }
 
+        public void DoInvoke(object[] ConsParams)
+        {
+            if (ActiveType != null && ActiveMethod != null)
+            {
+                object activeObject = System.Activator.CreateInstance(ActiveType, ConsParams);
+                _returnValue = ActiveMethod.Invoke(activeObject, MethodParams);
+            }
+        }
+
         public int CountCalled
         {
             set;

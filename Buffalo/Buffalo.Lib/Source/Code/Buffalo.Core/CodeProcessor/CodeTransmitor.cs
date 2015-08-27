@@ -22,7 +22,15 @@ namespace Buffalo.Core.CodeProcessor
         {
             if (activeSelectLine.KeyCode == Container.KeyWordMap.Case)
             {
-
+                foreach (string paramName in activeSelectLine.ParamsPool.Keys)
+                {
+                    switch (paramName)
+                    {
+                        case "casename":
+                            refTestCase.CaseName = activeSelectLine.ParamsPool[paramName];
+                            break;
+                    }
+                }
             }
         }
 
@@ -65,7 +73,7 @@ namespace Buffalo.Core.CodeProcessor
                 refCaseMethodItemObj.Index = activeSelectLine.CodeIndex;
                 refCaseMethodItemObj.ActiveMethod = new ElementActions.MethodItem();
                 refCaseMethodItemObj.ActiveMethod.ActiveType = typeof(WebDriver.WebBrowserActions);
-                refActiveCase.ActiveCaseMethodPool.Add(refCaseMethodItemObj.Index,refCaseMethodItemObj);
+                refActiveCase.ActiveCaseWebBrowserPool.Add(refCaseMethodItemObj.Index,refCaseMethodItemObj);
                 object[] methodParam;
                 foreach (string paramName in activeSelectLine.ParamsPool.Keys)
                 {
@@ -80,13 +88,31 @@ namespace Buffalo.Core.CodeProcessor
                             }
                             break;
                         case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_SwitchToWindow:
+                             refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_SwitchToWindow);
+                            if (activeSelectLine.ParamsPool[paramName] != Container.KeyWordMap.Null)
+                            {
+                                methodParam = new object[] { activeSelectLine.ParamsPool[paramName] };
+                                refCaseMethodItemObj.ActiveMethod.MethodParams = methodParam;
+                            }
+                            break;
+                        case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_CloseWindow:
+                            refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_CloseWindow);                            
+                            break;
+                        case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_Action_IsAlert:
+                            refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_Action_IsAlert);                            
+                            break;
+                        case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_GetCurrentWindowHandle:
+                            refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_SwitchToWindow);                           
+                            break;
+                        case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_GetSourceOfPage:
+                            refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_SwitchToWindow);                         
                             break;
                     }
                 }
             }
         }
 
-        public static void CodeTransmit_Action_Action(Case.CaseMethodItem refCaseMethodItemObj, Case.BasicTestCase refActiveCase, CodeLine activeSelectLine)
+        public static void CodeTransmit_Action_ElementAction(Case.CaseMethodItem refCaseMethodItemObj, Case.BasicTestCase refActiveCase, CodeLine activeSelectLine)
         {
             if (refCaseMethodItemObj != null && activeSelectLine.KeyCode == Container.KeyWordMap.Action)
             {

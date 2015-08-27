@@ -98,7 +98,7 @@ namespace Buffalo.Core.CodeProcessor
                 if (!string.IsNullOrEmpty(CodeLine))
                 {
                     string[] KeyCodes = CodeLine.Split(' ');
-                    if (_KeyCodeContainerObj.Checking_KeyCode(KeyCodes[0]))
+                    if (!_KeyCodeContainerObj.Checking_KeyCode(KeyCodes[0]))
                         Container.GlobalObjsPoolContainer.GlobalObject_MessageContainer.Action_InsertMessage(countIndex, Container.CodeErrMessage.InvalidatedKeyWord, Container.ErrLevel.Normal, true);
                     else
                     {

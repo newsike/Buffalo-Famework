@@ -13,6 +13,8 @@ namespace Buffalo.Executor
         {
             Console.WriteLine("Buffalo Automation Engin");
             Console.WriteLine("Init Services");
+            Buffalo.Core.Engine.BuffaloEngine engine = new Core.Engine.BuffaloEngine();
+            engine.StartServices_ASY();
             ConsoleColor preColor= Console.ForegroundColor;
             Console.ForegroundColor=ConsoleColor.Yellow;
             Console.Write("Load Case File:");
@@ -20,8 +22,9 @@ namespace Buffalo.Executor
             FileStream fs=new FileStream(testcaseFile,FileMode.Open);
             StreamReader sr=new StreamReader(fs);
             string code=sr.ReadToEnd();
-            Buffalo.Core.CodeProcessor.CodeScaner scaner = new Core.CodeProcessor.CodeScaner();
-            scaner.Action_Scan(code);
+            sr.Close();
+            fs.Close();
+            engine.Action_InsertTask(code);           
             
         }
     }

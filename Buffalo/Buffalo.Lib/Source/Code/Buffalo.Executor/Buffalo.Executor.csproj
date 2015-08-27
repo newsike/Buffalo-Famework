@@ -47,6 +47,16 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Buffalo.Basic\Buffalo.Basic.csproj">
+      <Project>{02db60e0-8e0d-4064-b52a-63b7d5880a39}</Project>
+      <Name>Buffalo.Basic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Buffalo.Core\Buffalo.Core.csproj">
+      <Project>{2e77ece8-d3b8-4592-89e2-1b95858c7328}</Project>
+      <Name>Buffalo.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

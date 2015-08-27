@@ -50,6 +50,14 @@ namespace Buffalo.Core.Case
             get;
         }
 
+        public Dictionary<int, CaseMethodItem> ActiveCaseWebBrowserPool
+        {
+            set;
+            get;
+        }
+
+
+
         public List<LoopItem> ActiveLoopPool
         {
             set;
@@ -99,7 +107,11 @@ namespace Buffalo.Core.Case
             get;
         }
 
-
+        public int CaseCodeLineCount
+        {
+            set;
+            get;
+        }
 
     }
 }
