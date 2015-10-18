@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Buffalo.Core.Case
 {
@@ -38,6 +39,18 @@ namespace Buffalo.Core.Case
     public class BasicTestCase
     {
 
+        public CaseReport ActiveTestCaseReport
+        {
+            set;
+            get;
+        }
+
+        public string TestcaseCuurentFile
+        {
+            set;
+            get;
+        }
+
         public Dictionary<int, CaseContentItem> ActiveCaseContentPool
         {
             set;
@@ -56,7 +69,23 @@ namespace Buffalo.Core.Case
             get;
         }
 
+        public Dictionary<int, CaseMethodItem> ActiveCaseSelectorPool
+        {
+            set;
+            get;
+        }
 
+        public Dictionary<string, XmlDocument> ActiveCaseDataSourcePool
+        {
+            set;
+            get;
+        }
+
+        public bool SingleInterrupt
+        {
+            set;
+            get;
+        }
 
         public List<LoopItem> ActiveLoopPool
         {
@@ -92,7 +121,11 @@ namespace Buffalo.Core.Case
         {
             ActiveCaseContentPool = new Dictionary<int, CaseContentItem>();
             ActiveCaseMethodPool = new Dictionary<int, CaseMethodItem>();
+            ActiveCaseWebBrowserPool = new Dictionary<int, CaseMethodItem>();
+            ActiveCaseSelectorPool = new Dictionary<int, CaseMethodItem>();
+            ActiveCaseDataSourcePool = new Dictionary<string, XmlDocument>();
             ActiveLoopPool = new List<LoopItem>();
+            ActiveTestCaseReport = new CaseReport();
         }
         
         public string CaseName

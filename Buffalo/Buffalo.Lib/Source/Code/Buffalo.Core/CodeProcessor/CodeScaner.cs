@@ -97,7 +97,7 @@ namespace Buffalo.Core.CodeProcessor
             {
                 if (!string.IsNullOrEmpty(CodeLine))
                 {
-                    string[] KeyCodes = CodeLine.Split(' ');
+                    string[] KeyCodes = CodeLine.Split(' ');                    
                     if (!_KeyCodeContainerObj.Checking_KeyCode(KeyCodes[0]))
                         Container.GlobalObjsPoolContainer.GlobalObject_MessageContainer.Action_InsertMessage(countIndex, Container.CodeErrMessage.InvalidatedKeyWord, Container.ErrLevel.Normal, true);
                     else
@@ -108,13 +108,17 @@ namespace Buffalo.Core.CodeProcessor
                         {
                             for (int i = 1; i < KeyCodes.Length; i++)
                             {
-                                string[] activeParam = KeyCodes[i].Split(':');
+                                string[] activeParam = KeyCodes[i].Split('$');
                                 if (activeParam.Length == 2)
+                                {
+                                    activeParam[1] = activeParam[1].Replace("%S", " ");
                                     newLine.SetParam(activeParam[0], activeParam[1]);
+                                }
                                 else
                                     newLine.SetParam("Param", activeParam[0]);
                             }
                         }
+                        newLine.CodeIndex = countIndex;
                         _CodePool.Add(_CodePool.Count + 1, newLine);
                     }                    
                 }

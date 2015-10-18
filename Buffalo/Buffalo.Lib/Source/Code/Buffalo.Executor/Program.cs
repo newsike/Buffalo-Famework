@@ -17,14 +17,27 @@ namespace Buffalo.Executor
             engine.StartServices_ASY();
             ConsoleColor preColor= Console.ForegroundColor;
             Console.ForegroundColor=ConsoleColor.Yellow;
-            Console.Write("Load Case File:");
-            string testcaseFile = Console.ReadLine();
-            FileStream fs=new FileStream(testcaseFile,FileMode.Open);
-            StreamReader sr=new StreamReader(fs);
-            string code=sr.ReadToEnd();
-            sr.Close();
-            fs.Close();
-            engine.Action_InsertTask(code);           
+            while (true)
+            {
+                try
+                {
+                    Console.Write("Load Case File [ Type : Exit to exit ]:");
+                    string testcaseFile = Console.ReadLine();
+                    if (testcaseFile == "Exit")
+                        break;
+                    FileStream fs = new FileStream(testcaseFile, FileMode.Open);
+                    StreamReader sr = new StreamReader(fs);
+                    string code = sr.ReadToEnd();                    
+                    sr.Close();
+                    fs.Close();
+                    engine.Action_InsertTask(code);
+                }
+                catch
+                {
+                    Console.WriteLine("Faild to load test case file.");
+                    continue;
+                }
+            }
             
         }
     }

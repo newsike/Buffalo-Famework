@@ -18,7 +18,6 @@ namespace Buffalo.Core.Engine
 
         private Buffalo.Core.CodeProcessor.CodeTransmitor _Obj_Transmitor = new CodeProcessor.CodeTransmitor();
         private WebDriver.WebBrowserDriver _Obj_WebBrowserDriver = new WebDriver.WebBrowserDriver();
-        private ElementActions.ElementSelector _Obj_ElementSelector;
         
         public void StartServices_ASY()
         {
@@ -55,13 +54,25 @@ namespace Buffalo.Core.Engine
             testCase.CaseCodeLineCount = _Obj_Scaner.CodePool.Count;
             string idCase = Guid.NewGuid().ToString();
             testCase.CaseID = idCase;
+            if (testCase.CaseName == "")
+                testCase.CaseName = Guid.NewGuid().ToString();
+            testCase.ActiveTestCaseReport = Case.CaseReport.CreateInstance(testCase.CaseName);
+            testCase.SingleInterrupt = false;
             foreach (int codeIndex in _Obj_Scaner.CodePool.Keys)
             {
                 Case.CaseContentItem caseContent = Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_CreateContentInstance();
                 Case.CaseMethodItem caseMethod = Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_CreateMethodInstance();
-                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_Connect(testCase, _Obj_WebBrowserDriver, _Obj_Scaner.CodePool[codeIndex]);
-                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_Select(caseContent, testCase, _Obj_Scaner.CodePool[codeIndex]);
+                Case.CaseMethodItem caseSelectMethod = Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_CreateMethodInstance();
+                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_Case(testCase, _Obj_Scaner.CodePool[codeIndex]);
+                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_Connect(testCase, _Obj_WebBrowserDriver, _Obj_Scaner.CodePool[codeIndex]); 
+                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_WebBrowser(caseMethod, testCase, _Obj_Scaner.CodePool[codeIndex]);
+                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_Select(caseSelectMethod, testCase, _Obj_Scaner.CodePool[codeIndex]);
                 Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_ElementAction(caseMethod, testCase, _Obj_Scaner.CodePool[codeIndex]);
+                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_ImportXML(testCase, _Obj_Scaner.CodePool[codeIndex]);
+                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_ImportDB(testCase, _Obj_Scaner.CodePool[codeIndex]);
+                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_ImportExcel(testCase, _Obj_Scaner.CodePool[codeIndex]);
+                if (testCase.SingleInterrupt == true)
+                    return;
             }
             _RunningTaskPool.Enqueue(testCase);
         }
@@ -84,24 +95,40 @@ namespace Buffalo.Core.Engine
             ElementActions.ElementItem activeSelectedElement = null;
             for (int codeIndex = 1; codeIndex <= activeCase.CaseCodeLineCount; codeIndex++)
             {
-                if (activeCase.ActiveCaseContentPool.ContainsKey(codeIndex))
+                try
                 {
-                    activeSelectedElement = activeCase.ActiveCaseContentPool[codeIndex].ActiveElementItem;
-                    continue;
-                }
-                else if (activeCase.ActiveCaseMethodPool.ContainsKey(codeIndex))
-                {
-                    if (activeSelectedElement != null)
+                    if (activeCase.ActiveCaseContentPool.ContainsKey(codeIndex))
                     {
-                        object[] consParams = new object[] { activeSelectedElement };
-                        activeCase.ActiveCaseMethodPool[codeIndex].ActiveMethod.DoInvoke(consParams);
+                        activeSelectedElement = activeCase.ActiveCaseContentPool[codeIndex].ActiveElementItem;
+                        continue;
+                    }
+                    else if (activeCase.ActiveCaseMethodPool.ContainsKey(codeIndex))
+                    {
+                        if (activeSelectedElement != null)
+                        {
+                            object[] consParams = new object[] { activeSelectedElement };
+                            activeCase.ActiveCaseMethodPool[codeIndex].ActiveMethod.DoInvoke(consParams);
+                            continue;
+                        }
+                    }
+                    else if (activeCase.ActiveCaseWebBrowserPool.ContainsKey(codeIndex))
+                    {
+                        object[] conParam = new object[] { activeCase.ActiveWebBrowserDriverObject.ActiveWebDriver };
+                        activeCase.ActiveCaseWebBrowserPool[codeIndex].ActiveMethod.DoInvoke(conParam);
+                        continue;
+                    }
+                    else if (activeCase.ActiveCaseSelectorPool.ContainsKey(codeIndex))
+                    {
+                        object[] conParam = new object[] { activeCase.ActiveWebBrowserDriverObject.ActiveWebDriver };
+                        activeCase.ActiveCaseSelectorPool[codeIndex].ActiveMethod.DoInvoke(conParam);
+                        activeSelectedElement = (ElementActions.ElementItem)activeCase.ActiveCaseSelectorPool[codeIndex].ActiveMethod.MethodReturnValue;
                         continue;
                     }
                 }
-                else if (activeCase.ActiveCaseWebBrowserPool.ContainsKey(codeIndex))
+                catch
                 {
-                    activeCase.ActiveCaseWebBrowserPool[codeIndex].ActiveMethod.DoInvoke();
-                    continue;
+                    activeCase.ActiveTestCaseReport.InsertFaildItem(codeIndex, "Faild Execut : Code Line : " + codeIndex, true);
+                    return;
                 }
 
             }
@@ -113,9 +140,9 @@ namespace Buffalo.Core.Engine
             {
                 if(_RunningTaskPool.Count>0)
                 {
-                    Case.BasicTestCase activeCase = _RunningTaskPool.Dequeue();
+                    Case.BasicTestCase activeCase = _RunningTaskPool.Dequeue();                    
                     if (activeCase != null)
-                    {
+                    {                       
                         Action_ExecuteTestCase(activeCase);
                     }
                 }

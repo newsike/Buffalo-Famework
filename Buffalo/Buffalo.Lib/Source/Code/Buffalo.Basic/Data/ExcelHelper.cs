@@ -298,7 +298,7 @@ namespace Buffalo.Basic.Data
             }
         }
 
-        ExcelConnection GetConnection(string ConnectionName)
+        public ExcelConnection GetConnection(string ConnectionName)
         {
             if(ConnectionName!="")
             {

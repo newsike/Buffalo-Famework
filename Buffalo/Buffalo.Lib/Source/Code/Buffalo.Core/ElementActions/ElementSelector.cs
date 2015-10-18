@@ -77,6 +77,16 @@ namespace Buffalo.Core.ElementActions
 
     }    
 
+    public class ElementSelectorMap
+    {
+        public const string Action_SelectElementByName = "Action_SelectElementByName";
+        public const string Action_SelectElementByLinkText = "Action_SelectElementByLinkText";
+        public const string Action_SelectElementByClassname = "Action_SelectElementByClassname";
+        public const string Action_SelectElementByID = "Action_SelectElementByID";
+        public const string Action_SelectElementByTag = "Action_SelectElementByTag";
+        public const string Action_SelectElementByXPATH = "Action_SelectElementByXPATH";
+    }
+
     public class ElementSelector
     {
         private IWebDriver _activeWebDriverObj;

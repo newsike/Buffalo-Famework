@@ -54,6 +54,7 @@
     <Compile Include="Case\BasicTestCase.cs" />
     <Compile Include="Case\CaseContentItem.cs" />
     <Compile Include="Case\CaseMethodItem.cs" />
+    <Compile Include="Case\CaseReport.cs" />
     <Compile Include="CodeProcessor\AssemblyHelper.cs" />
     <Compile Include="CodeProcessor\CodeScaner.cs" />
     <Compile Include="CodeProcessor\CodeTransmitor.cs" />

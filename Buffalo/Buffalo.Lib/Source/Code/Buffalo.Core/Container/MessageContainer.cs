@@ -52,7 +52,7 @@ namespace Buffalo.Core.Container
 
     public class MessageContainer
     {
-        private List<MessageItem> _MessagePool = new List<MessageItem>();
+        private Queue<MessageItem> _MessagePool = new Queue<MessageItem>();
 
         public void Action_InsertMessage(int SourceLineIndex,CodeErrMessage errMessage,ErrLevel errorLevel,bool isInterrup)
         {
@@ -62,6 +62,8 @@ namespace Buffalo.Core.Container
             newItem.ErrorLevel = errorLevel;
             newItem.Interrup = isInterrup;
         }
+
+
 
     }
 }

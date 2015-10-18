@@ -102,14 +102,6 @@ namespace Buffalo.Core.ElementActions
             _selectedElementItem = selectedElementItem;
         }
 
-        public void Action_Click(int delay)
-        {
-            if (delay > 600)
-                delay = 600;
-            Thread.Sleep(1000 * delay);
-            _selectedElementItem.refElement.Click();
-        }
-
         public void Action_Click()
         {
             if (_selectedElementItem.refElement != null)
