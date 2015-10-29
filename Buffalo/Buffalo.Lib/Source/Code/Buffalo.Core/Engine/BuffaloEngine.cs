@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Xml;
 
 
 namespace Buffalo.Core.Engine
@@ -18,6 +19,9 @@ namespace Buffalo.Core.Engine
 
         private Buffalo.Core.CodeProcessor.CodeTransmitor _Obj_Transmitor = new CodeProcessor.CodeTransmitor();
         private WebDriver.WebBrowserDriver _Obj_WebBrowserDriver = new WebDriver.WebBrowserDriver();
+
+        private List<Thread> _FetchMessageThreadsPool = new List<Thread>();
+                
         
         public void StartServices_ASY()
         {
@@ -31,8 +35,11 @@ namespace Buffalo.Core.Engine
         {
             _TaskThread_FecthTask.Abort();
             _TaskThread_InvokeTask.Abort();
+            foreach (Thread activeThread in _FetchMessageThreadsPool)
+                activeThread.Abort();
         }
-        
+
+         
         public bool Action_InsertTask(string Code)
         {
             if (Code != "")
@@ -46,11 +53,27 @@ namespace Buffalo.Core.Engine
                 return false;
         }
 
+        public void Action_FetchConsoleMessage(object testCase)
+        {
+            while (true)
+            {
+                Case.BasicTestCase activeTestCase = (Case.BasicTestCase)testCase;
+                if (activeTestCase.ActiveTestCaseReport.reportMessageItems.Count > 0)
+                {
+                    Case.CaseReportMessageItem activeItem = activeTestCase.ActiveTestCaseReport.reportMessageItems.Dequeue();
+                    Console.WriteLine(">| Buffalo Core |< - >| " + activeItem.CodeIndex + ":" + activeItem.CodeMessage);
+                }
+                else
+                    Thread.Sleep(500);
+            }
+        }        
+
         public void Action_TransmitTask(string Code)
         {
             Buffalo.Core.CodeProcessor.CodeScaner _Obj_Scaner = new CodeProcessor.CodeScaner();
             _Obj_Scaner.Action_Scan(Code);
             Case.BasicTestCase testCase = new Case.BasicTestCase();
+            testCase.CaseName = "";
             testCase.CaseCodeLineCount = _Obj_Scaner.CodePool.Count;
             string idCase = Guid.NewGuid().ToString();
             testCase.CaseID = idCase;
@@ -58,6 +81,9 @@ namespace Buffalo.Core.Engine
                 testCase.CaseName = Guid.NewGuid().ToString();
             testCase.ActiveTestCaseReport = Case.CaseReport.CreateInstance(testCase.CaseName);
             testCase.SingleInterrupt = false;
+            Thread newThreadFetchMessage = new Thread(new ParameterizedThreadStart(Action_FetchConsoleMessage));
+            _FetchMessageThreadsPool.Add(newThreadFetchMessage);
+            newThreadFetchMessage.Start(testCase);
             foreach (int codeIndex in _Obj_Scaner.CodePool.Keys)
             {
                 Case.CaseContentItem caseContent = Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_CreateContentInstance();
@@ -71,6 +97,9 @@ namespace Buffalo.Core.Engine
                 Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_ImportXML(testCase, _Obj_Scaner.CodePool[codeIndex]);
                 Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_ImportDB(testCase, _Obj_Scaner.CodePool[codeIndex]);
                 Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_ImportExcel(testCase, _Obj_Scaner.CodePool[codeIndex]);
+                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_DataFill(testCase, _Obj_Scaner.CodePool[codeIndex]);
+                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_DataSet(testCase, _Obj_Scaner.CodePool[codeIndex]);
+                Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_FillExistedData(testCase, _Obj_Scaner.CodePool[codeIndex]);
                 if (testCase.SingleInterrupt == true)
                     return;
             }

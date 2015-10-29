@@ -98,10 +98,13 @@ namespace Buffalo.Core.Case
             string caseReportFileName = "";
             while (true)
             {
-                caseReportFileName = CaseName + "_" + DateTime.Now.Date + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + ".xml";
+                caseReportFileName = CaseName + "_" + DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + ".xml";
                 FileInfo caseReportFile = new FileInfo(Environment.CurrentDirectory + "\\CaseReport\\" + CaseName + "\\" + caseReportFileName);
-                if (caseReportFile.Exists)
+                if (!caseReportFile.Exists)
+                {
+                    caseReportFileName = Environment.CurrentDirectory + "\\CaseReport\\" + CaseName + "\\" + caseReportFileName;
                     break;
+                }
             }
             return caseReportFileName;
         }
@@ -115,7 +118,7 @@ namespace Buffalo.Core.Case
             failItemNode.AppendChild(messageNode);
             XmlNode abortNode = Buffalo.Basic.Data.XmlHelper.CreateNode(reportDoc, "abort", Abort ? "1" : "0");
             failItemNode.AppendChild(abortNode);
-            XmlNode faildNode = reportDoc.SelectSingleNode("/root/faild");
+            XmlNode faildNode = reportDoc.SelectSingleNode("/root/detail/faild");
             faildNode.AppendChild(failItemNode);
             CaseReportMessageItem newMessageItem = new CaseReportMessageItem();
             newMessageItem.CodeIndex = LineIndex;

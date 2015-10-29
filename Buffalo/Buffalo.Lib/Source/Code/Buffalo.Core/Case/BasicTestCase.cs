@@ -117,6 +117,12 @@ namespace Buffalo.Core.Case
             get;
         }
 
+        public Dictionary<string, string> ActiveDataBuffer
+        {
+            set;
+            get;
+        }
+
         public BasicTestCase()
         {
             ActiveCaseContentPool = new Dictionary<int, CaseContentItem>();
@@ -126,6 +132,7 @@ namespace Buffalo.Core.Case
             ActiveCaseDataSourcePool = new Dictionary<string, XmlDocument>();
             ActiveLoopPool = new List<LoopItem>();
             ActiveTestCaseReport = new CaseReport();
+            ActiveDataBuffer = new Dictionary<string, string>();
         }
         
         public string CaseName

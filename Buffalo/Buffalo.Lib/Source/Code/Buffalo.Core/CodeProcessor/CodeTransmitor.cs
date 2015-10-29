@@ -29,7 +29,7 @@ namespace Buffalo.Core.CodeProcessor
                     switch (paramName)
                     {
                         case "casename":
-                            refTestCase.CaseName = activeSelectLine.ParamsPool[paramName];  
+                            refTestCase.CaseName = activeSelectLine.ParamsPool[paramName];
                             break;
                     }
                 }
@@ -52,21 +52,21 @@ namespace Buffalo.Core.CodeProcessor
                         tmpDoc.Load(sourceFile);
                         XmlNodeList rowNodes = tmpDoc.SelectNodes("/root/row");
                         int rowIndex = 1;
-                        foreach(XmlNode rowNode in rowNodes)
+                        foreach (XmlNode rowNode in rowNodes)
                         {
                             XmlNode newRowNode = Buffalo.Basic.Data.XmlHelper.CreateNode(sourceDataDoc, "row", "");
                             Buffalo.Basic.Data.XmlHelper.SetAttribute(newRowNode, "index", rowIndex.ToString());
-                            foreach(XmlAttribute activeAttr in rowNode.Attributes)
+                            foreach (XmlAttribute activeAttr in rowNode.Attributes)
                             {
-                                string value=Buffalo.Basic.Data.XmlHelper.GetNodeValue("@"+activeAttr.Name,rowNode);
+                                string value = Buffalo.Basic.Data.XmlHelper.GetNodeValue("@" + activeAttr.Name, rowNode);
                                 Buffalo.Basic.Data.XmlHelper.SetAttribute(newRowNode, "column_" + activeAttr.Name, value);
                             }
                             sourceDataDoc.SelectSingleNode("/root").AppendChild(newRowNode);
                             rowIndex++;
                         }
-                        
+
                     }
-                    catch(Exception err)
+                    catch (Exception err)
                     {
                         refTestCase.SingleInterrupt = true;
                         refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Import XML : " + err.Message, true);
@@ -78,12 +78,7 @@ namespace Buffalo.Core.CodeProcessor
                     refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Import XML : invalidate word namd or source.", true);
 
                 }
-            }
-            else
-            {
-                refTestCase.SingleInterrupt = true;
-                refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Import XML : invalidate keyword : ImportXML.", true);
-            }
+            }          
         }
 
         public static void CodeTransmit_Action_ImportDB(Case.BasicTestCase refTestCase, CodeLine activeSelectLine)
@@ -127,7 +122,7 @@ namespace Buffalo.Core.CodeProcessor
                             sourceDataDoc.SelectSingleNode("/root").AppendChild(newRowItem);
                         }
                     }
-                    catch(Exception err)
+                    catch (Exception err)
                     {
                         refTestCase.SingleInterrupt = true;
                         refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Import DB : " + err.Message, true);
@@ -139,11 +134,144 @@ namespace Buffalo.Core.CodeProcessor
                     refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Import DB : invalidate word.", true);
 
                 }
-            }
-            else
+            }          
+        }
+
+        public static void CodeTransmit_Action_FillExistedData(Case.BasicTestCase refTestCase, CodeLine activeSelectLine)
+        {
+            foreach (string paramName in activeSelectLine.ParamsPool.Keys)
             {
-                refTestCase.SingleInterrupt = true;
-                refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Import DB : invalidate keyword.", true);   
+                string paramValue = activeSelectLine.ParamsPool[paramName];
+                if (paramValue.Contains("%D"))
+                {
+                    string dataName = paramValue.Replace("%D", "");
+                    if (refTestCase.ActiveDataBuffer.ContainsKey(dataName))
+                        activeSelectLine.ParamsPool[paramName] = refTestCase.ActiveDataBuffer[dataName];
+                    else
+                    {
+                        refTestCase.SingleInterrupt = true;
+                        refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : No data : " + dataName, true);
+                        return;
+                    }
+                }
+            }
+        }
+
+        public static void CodeTransmit_Action_DataSet(Case.BasicTestCase refTestCase, CodeLine activeSelectLine)
+        {
+            if (refTestCase != null && activeSelectLine.KeyCode == Container.KeyWordMap.DataSet)
+            {
+                if (!activeSelectLine.ParamsPool.ContainsKey("dataname"))
+                {
+                    refTestCase.SingleInterrupt = true;
+                    refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Data Set : missing dataname.", true);
+                    return;
+                }
+                else
+                {
+                    if (!activeSelectLine.ParamsPool.ContainsKey("value"))
+                    {
+                        refTestCase.SingleInterrupt = true;
+                        refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Data Set : missing data value.", true);
+                        return;
+                    }
+                    else
+                    {
+                        string dataName = activeSelectLine.ParamsPool["dataname"];
+                        string dataValue = activeSelectLine.ParamsPool["value"];
+                        if (refTestCase.ActiveDataBuffer.ContainsKey(dataName))
+                            refTestCase.ActiveDataBuffer[dataName] = dataValue;
+                        else
+                            refTestCase.ActiveDataBuffer.Add(dataName, dataValue);
+                    }
+                }
+            }
+        }
+
+        public static void CodeTransmit_Action_DataFill(Case.BasicTestCase refTestCase, CodeLine activeSelectLine)
+        {
+            if (refTestCase != null && activeSelectLine.KeyCode == Container.KeyWordMap.DataFill)
+            {
+                if (!activeSelectLine.ParamsPool.ContainsKey("sourcename"))
+                {
+                    refTestCase.SingleInterrupt = true;
+                    refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Data Fill : missing sourcename.", true);
+                    return;
+                }
+                else
+                {
+                    if (!activeSelectLine.ParamsPool.ContainsKey("dataname"))
+                    {
+                        refTestCase.SingleInterrupt = true;
+                        refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Data Fill : missing dataname.", true);
+                        return;
+                    }
+                    else
+                    {
+                        string sourcename = activeSelectLine.ParamsPool["sourcename"];
+                        if (!refTestCase.ActiveCaseDataSourcePool.ContainsKey(sourcename))
+                        {
+                            refTestCase.SingleInterrupt = true;
+                            refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Data Fill : can not foune datasource : " + sourcename + ".", true);
+                            return;
+                        }
+                        XmlDocument sourceDoc = refTestCase.ActiveCaseDataSourcePool[sourcename];
+                        if (sourceDoc != null)
+                        {
+                            if (activeSelectLine.ParamsPool.ContainsKey("row") && activeSelectLine.ParamsPool.ContainsKey("column"))
+                            {
+                                XmlNodeList rowNodes = sourceDoc.SelectNodes("/root/row");
+                                int MaxRow = rowNodes.Count;
+                                if (MaxRow <= 0)
+                                {
+                                    refTestCase.SingleInterrupt = true;
+                                    refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Data Fill : no data row in data source.", true);
+                                    return;
+                                }
+                                string RowValue = activeSelectLine.ParamsPool["row"];
+                                string ColumnName = activeSelectLine.ParamsPool["column"];
+                                int RowIndex = 1;
+                                if (RowValue == "rand")
+                                {
+                                    Random rnd = new Random();
+                                    RowIndex = rnd.Next(1, MaxRow);
+                                }
+                                else
+                                {
+                                    int.TryParse(activeSelectLine.ParamsPool["row"], out RowIndex);
+                                }
+                                XmlNode selectedRowNode = sourceDoc.SelectSingleNode("/root/row[@index='" + RowIndex + "']");
+                                if (selectedRowNode != null)
+                                {
+                                    string value = Buffalo.Basic.Data.XmlHelper.GetNodeValue("@column_" + ColumnName, selectedRowNode);
+                                    string dataname = activeSelectLine.ParamsPool["dataname"];
+                                    if (refTestCase.ActiveDataBuffer.ContainsKey(dataname))
+                                        refTestCase.ActiveDataBuffer[dataname] = value;
+                                    else
+                                        refTestCase.ActiveDataBuffer.Add(dataname, value);
+                                }
+                                else
+                                {
+                                    refTestCase.SingleInterrupt = true;
+                                    refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Data Fill : can not found row node.", true);
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                refTestCase.SingleInterrupt = true;
+                                refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Data Fill : missing row or column paramter.", true);
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            refTestCase.SingleInterrupt = true;
+                            refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Data Fill : datasource : " + sourcename + " is Null.", true);
+                            return;
+                        }
+                    }
+                }
             }
         }
 
@@ -188,22 +316,12 @@ namespace Buffalo.Core.CodeProcessor
                             refTestCase.ActiveCaseDataSourcePool[sourceName] = sourceDataDoc;
                         }
                     }
-                    catch(Exception err)
+                    catch (Exception err)
                     {
                         refTestCase.SingleInterrupt = true;
                         refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Import Excel : " + err.Message, true);
                     }
-                }
-                else
-                {
-                    refTestCase.SingleInterrupt = true;
-                    refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Import Excel : invalidate word.", true);
-                }
-            }
-            else
-            {
-                refTestCase.SingleInterrupt = true;
-                refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Import Excel : invalidate keyword.", true);
+                }             
             }
         }
 
@@ -240,17 +358,11 @@ namespace Buffalo.Core.CodeProcessor
                     refTestCase.ActiveWebBrowserDriverObject = refWebBrowserDriver;
                     refTestCase.ActiveElementSelectorObject = new ElementActions.ElementSelector(refWebBrowserDriver.ActiveWebDriver);
                 }
-                catch(Exception err)
+                catch (Exception err)
                 {
                     refTestCase.SingleInterrupt = true;
                     refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Connect : " + err.Message, true);
                 }
-            }
-            else
-            {
-                refTestCase.SingleInterrupt = true;
-                refTestCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Connect : invalidate keyword.", true);
-
             }
         }
 
@@ -297,6 +409,9 @@ namespace Buffalo.Core.CodeProcessor
                             case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_GetSourceOfPage:
                                 refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_SwitchToWindow);
                                 break;
+                            case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_Action_Wait:
+                                refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_Action_Wait);
+                                break;
                         }
                     }
                 }
@@ -305,12 +420,6 @@ namespace Buffalo.Core.CodeProcessor
                     refActiveCase.SingleInterrupt = true;
                     refActiveCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : WBAction : " + err.Message, true);
                 }
-            }
-            else
-            {
-                refActiveCase.SingleInterrupt = true;
-                refActiveCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : WBAction : invalidate keyword.", true);
-
             }
         }
 
@@ -349,16 +458,11 @@ namespace Buffalo.Core.CodeProcessor
                         }
                     }
                 }
-                catch(Exception err)
+                catch (Exception err)
                 {
                     refActiveCase.SingleInterrupt = true;
                     refActiveCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Action : " + err.Message, true);
                 }
-            }
-            else
-            {
-                refActiveCase.SingleInterrupt = true;
-                refActiveCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Action : invalidate keyword.", true);
             }
         }
 
@@ -399,17 +503,13 @@ namespace Buffalo.Core.CodeProcessor
                         refActiveCase.ActiveCaseSelectorPool.Add(refCaseMethodItemObj.Index, refCaseMethodItemObj);
                     }
                 }
-                catch(Exception err)
+                catch (Exception err)
                 {
                     refActiveCase.SingleInterrupt = true;
                     refActiveCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Select : " + err.Message, true);
                 }
             }
-            else
-            {
-                refActiveCase.SingleInterrupt = true;
-                refActiveCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Select : invalidate keyword.", true);
-            }
+
         }
     }
 }

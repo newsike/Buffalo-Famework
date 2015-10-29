@@ -75,6 +75,7 @@ namespace Buffalo.Core.WebDriver
         public const string Method_Action_WB_Action_GetSourceOfPage = "Action_GetSourceOfPage";
         public const string Method_Action_WB_Action_GetCurrentWindowHandle = "Action_GetCurrentWindowHandle";
         public const string Method_Action_WB_Action_Action_IsAlert = "Action_IsAlert";
+        public const string Method_Action_WB_Action_Action_Wait = "Action_Wait";
     }
 
     public class WebBrowserActions
@@ -94,6 +95,13 @@ namespace Buffalo.Core.WebDriver
         public void Action_SetWebDriverObj(IWebDriver activeWebDriverObj)
         {
             _activeWebDriverObj = activeWebDriverObj;
+        }
+
+        public void Action_Wait(string Time)
+        {
+            int timeSpan=1000;
+            int.TryParse(Time,out timeSpan);
+            Thread.Sleep(timeSpan);
         }
 
         public void Action_StartBrowser(string URL)
