@@ -23,8 +23,8 @@ namespace Buffalo.Executor
                 {
                     Console.Write("Load Case File [ Type : Exit to exit ]:");
                     string testcaseFile = Console.ReadLine();
-                    if (testcaseFile == "Exit")
-                        break;
+                    if (testcaseFile == "Exit")                    
+                        Environment.Exit(1);                    
                     FileStream fs = new FileStream(testcaseFile, FileMode.Open);
                     StreamReader sr = new StreamReader(fs);
                     string code = sr.ReadToEnd();                    

@@ -409,8 +409,11 @@ namespace Buffalo.Core.CodeProcessor
                             case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_GetSourceOfPage:
                                 refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_SwitchToWindow);
                                 break;
+                                
                             case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_Action_Wait:
                                 refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_Action_Wait);
+                                methodParam = new object[] { activeSelectLine.ParamsPool[paramName] };
+                                refCaseMethodItemObj.ActiveMethod.MethodParams = methodParam;
                                 break;
                         }
                     }
@@ -455,6 +458,18 @@ namespace Buffalo.Core.CodeProcessor
                                 methodParam = new object[] { textParam };
                                 refCaseMethodItemObj.ActiveMethod.MethodParams = methodParam;
                                 break;
+                            case ElementActions.ActionMap.Method_Get_Content:
+                                string datanameParam = "";
+                                datanameParam = activeSelectLine.ParamsPool[paramName];
+                                if (datanameParam != Container.KeyWordMap.Null)
+                                {
+                                    string contentFromElement = refActiveCase.ActiveElementActionObject.Get_Content();
+                                    if (refActiveCase.ActiveDataBuffer.ContainsKey(datanameParam))
+                                        refActiveCase.ActiveDataBuffer[datanameParam] = contentFromElement;
+                                    else
+                                        refActiveCase.ActiveDataBuffer.Add(datanameParam, contentFromElement);
+                                }
+                                break;
                         }
                     }
                 }
@@ -463,6 +478,24 @@ namespace Buffalo.Core.CodeProcessor
                     refActiveCase.SingleInterrupt = true;
                     refActiveCase.ActiveTestCaseReport.InsertFaildItem(activeSelectLine.CodeIndex, "Fail to transmit : Action : " + err.Message, true);
                 }
+            }
+        }
+
+        public static void CodeTransmit_Action_AnalyseContent(Case.CaseMethodItem refCaseMethodItemObj, Case.BasicTestCase refActiveCase, CodeLine activeSelectLine)
+        {
+            if (refCaseMethodItemObj != null && activeSelectLine.KeyCode == Container.KeyWordMap.Select)
+            {
+                if(activeSelectLine.ParamsPool.ContainsKey("action"))
+                {
+                    string actionValue = activeSelectLine.ParamsPool["action"];
+                    if(actionValue==Analyse.AnalyseMap.Check_Equal_StrContent)
+                    {
+                        string sourceDataName = activeSelectLine.ParamsPool["sourcedata"];
+                        string objectDataName = activeSelectLine.ParamsPool["objectdata"];
+                    }
+                }
+                    
+                    
             }
         }
 

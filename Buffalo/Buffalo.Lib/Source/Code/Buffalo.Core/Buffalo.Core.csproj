@@ -51,6 +51,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analyse\AnalyseContent.cs" />
     <Compile Include="Case\BasicTestCase.cs" />
     <Compile Include="Case\CaseContentItem.cs" />
     <Compile Include="Case\CaseMethodItem.cs" />
@@ -69,12 +70,32 @@
     <Compile Include="WebDriver\WebBrowserDriver.cs" />
     <Compile Include="WebDriver\WebBrowserType.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="bin\Debug\Buffalo.Basic.dll" />
+    <Content Include="bin\Debug\Buffalo.Basic.pdb" />
+    <Content Include="bin\Debug\Buffalo.Core.dll" />
+    <Content Include="bin\Debug\Buffalo.Core.pdb" />
+    <Content Include="bin\Debug\ICSharpCode.SharpZipLib.dll" />
+    <Content Include="bin\Debug\NPOI.dll" />
+    <Content Include="bin\Debug\NPOI.OOXML.dll" />
+    <Content Include="bin\Debug\NPOI.OOXML.xml" />
+    <Content Include="bin\Debug\NPOI.OpenXml4Net.dll" />
+    <Content Include="bin\Debug\NPOI.OpenXml4Net.xml" />
+    <Content Include="bin\Debug\NPOI.OpenXmlFormats.dll" />
+    <Content Include="bin\Debug\NPOI.xml" />
+    <Content Include="bin\Debug\Selenium.WebDriverBackedSelenium.dll" />
+    <Content Include="bin\Debug\ThoughtWorks.Selenium.Core.dll" />
+    <Content Include="bin\Debug\WebDriver.dll" />
+    <Content Include="bin\Debug\WebDriver.Support.dll" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Buffalo.Basic\Buffalo.Basic.csproj">
       <Project>{02db60e0-8e0d-4064-b52a-63b7d5880a39}</Project>
       <Name>Buffalo.Basic</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\Release\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
