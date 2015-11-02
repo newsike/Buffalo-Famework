@@ -90,6 +90,8 @@ namespace Buffalo.Core.ElementActions
     public class ElementSelector
     {
         private IWebDriver _activeWebDriverObj;
+        private int _tryCount = 10;
+        private int _retryEachTime = 2000;
 
         public ElementSelector(IWebDriver activeWebDriverObj)
         {
@@ -113,15 +115,25 @@ namespace Buffalo.Core.ElementActions
             {
                 if (Name != "" && refElementItem != null)
                 {
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.Name(Name));
-                    if (selectedElement != null)
+                    int tryCount = _tryCount;
+                    while (tryCount > 0)
                     {
-                        if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byName))
-                            refElementItem.ElementFindMap.Add(HtmlFindMapType.byName, Name);
+                        IWebElement selectedElement = _activeWebDriverObj.FindElement(By.Name(Name));
+                        if (selectedElement != null)
+                        {
+                            if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byName))
+                                refElementItem.ElementFindMap.Add(HtmlFindMapType.byName, Name);
+                            else
+                                refElementItem.ElementFindMap[HtmlFindMapType.byName] = Name;
+                            refElementItem.ElementTag = selectedElement.TagName;
+                            refElementItem.refElement = selectedElement;
+                            break;
+                        }
                         else
-                            refElementItem.ElementFindMap[HtmlFindMapType.byName] = Name;
-                        refElementItem.ElementTag = selectedElement.TagName;
-                        refElementItem.refElement = selectedElement;
+                        {
+                            Thread.Sleep(_retryEachTime);
+                            tryCount--;
+                        }
                     }
                 }
             }
@@ -136,15 +148,24 @@ namespace Buffalo.Core.ElementActions
             {
                 if (Name != "")
                 {
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.Name(Name));
-                    if (selectedElement != null)
-                    {
-                        ElementItem newElementItem = new ElementItem();
-                        newElementItem.ElementFindMap.Add(HtmlFindMapType.byName, Name);
-                        newElementItem.ElementTag = selectedElement.TagName;
-                        newElementItem.refElement = selectedElement;
-                        return newElementItem;
-                    }
+                     int tryCount = _tryCount;
+                     while (tryCount > 0)
+                     {
+                         IWebElement selectedElement = _activeWebDriverObj.FindElement(By.Name(Name));
+                         if (selectedElement != null)
+                         {
+                             ElementItem newElementItem = new ElementItem();
+                             newElementItem.ElementFindMap.Add(HtmlFindMapType.byName, Name);
+                             newElementItem.ElementTag = selectedElement.TagName;
+                             newElementItem.refElement = selectedElement;
+                             return newElementItem;
+                         }
+                         else
+                         {
+                             Thread.Sleep(_retryEachTime);
+                             tryCount--;
+                         }
+                     }
                     return null;
                 }
                 else
@@ -162,15 +183,25 @@ namespace Buffalo.Core.ElementActions
             {
                 if (LinkText != "" && refElementItem != null)
                 {
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.LinkText(LinkText));
-                    if (selectedElement != null)
+                    int tryCount = _tryCount;
+                    while (tryCount > 0)
                     {
-                        if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byLinkText))
-                            refElementItem.ElementFindMap.Add(HtmlFindMapType.byLinkText, LinkText);
+                        IWebElement selectedElement = _activeWebDriverObj.FindElement(By.LinkText(LinkText));
+                        if (selectedElement != null)
+                        {
+                            if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byLinkText))
+                                refElementItem.ElementFindMap.Add(HtmlFindMapType.byLinkText, LinkText);
+                            else
+                                refElementItem.ElementFindMap[HtmlFindMapType.byLinkText] = LinkText;
+                            refElementItem.ElementTag = selectedElement.TagName;
+                            refElementItem.refElement = selectedElement;
+                            break;
+                        }
                         else
-                            refElementItem.ElementFindMap[HtmlFindMapType.byLinkText] = LinkText;
-                        refElementItem.ElementTag = selectedElement.TagName;
-                        refElementItem.refElement = selectedElement;
+                        {
+                            Thread.Sleep(_retryEachTime);
+                            tryCount--;
+                        }
                     }
                 }
             }
@@ -185,15 +216,25 @@ namespace Buffalo.Core.ElementActions
             {
                 if (LinkText != "")
                 {
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.LinkText(LinkText));
-                    if (selectedElement != null)
+                    int tryCount = _tryCount;
+                    while (tryCount > 0)
                     {
-                        ElementItem newElementItem = new ElementItem();
-                        newElementItem.ElementFindMap.Add(HtmlFindMapType.byLinkText, LinkText);
-                        newElementItem.ElementTag = selectedElement.TagName;
-                        newElementItem.refElement = selectedElement;
-                        return newElementItem;
+                        IWebElement selectedElement = _activeWebDriverObj.FindElement(By.LinkText(LinkText));
+                        if (selectedElement != null)
+                        {
+                            ElementItem newElementItem = new ElementItem();
+                            newElementItem.ElementFindMap.Add(HtmlFindMapType.byLinkText, LinkText);
+                            newElementItem.ElementTag = selectedElement.TagName;
+                            newElementItem.refElement = selectedElement;
+                            return newElementItem;
+                        }
+                        else
+                        {
+                            Thread.Sleep(_retryEachTime);
+                            tryCount--;
+                        }
                     }
+
                     return null;
                 }
                 else
@@ -203,24 +244,34 @@ namespace Buffalo.Core.ElementActions
             {
                 return null;
             }
-        } 
+        }
 
         public void Action_SelectElementByClassname(string Classname, ElementItem refElementItem)
         {
             try
             {
                 if (Classname != "" && refElementItem != null)
-                {                    
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.ClassName(Classname));
-                    if (selectedElement != null)
+                {        
+                    int tryCount = _tryCount;
+                    while (tryCount > 0)
                     {
-                        if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byTag))
-                            refElementItem.ElementFindMap.Add(HtmlFindMapType.byClassName, Classname);
+                        IWebElement selectedElement = _activeWebDriverObj.FindElement(By.ClassName(Classname));
+                        if (selectedElement != null)
+                        {
+                            if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byTag))
+                                refElementItem.ElementFindMap.Add(HtmlFindMapType.byClassName, Classname);
+                            else
+                                refElementItem.ElementFindMap[HtmlFindMapType.byClassName] = Classname;
+                            refElementItem.ElementTag = selectedElement.TagName;
+                            refElementItem.refElement = selectedElement;
+                            break;
+                        }
                         else
-                            refElementItem.ElementFindMap[HtmlFindMapType.byClassName] = Classname;
-                        refElementItem.ElementTag = selectedElement.TagName;
-                        refElementItem.refElement = selectedElement;
-                    }
+                        {
+                            Thread.Sleep(_retryEachTime);
+                            tryCount--;
+                        }
+                    }                    
                 }
             }
             catch
@@ -234,15 +285,25 @@ namespace Buffalo.Core.ElementActions
             {
                 if (Classname != "")
                 {
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.ClassName(Classname));
-                    if (selectedElement != null)
-                    {
-                        ElementItem newElementItem = new ElementItem();
-                        newElementItem.ElementFindMap.Add(HtmlFindMapType.byClassName, Classname);
-                        newElementItem.ElementTag = selectedElement.TagName;
-                        newElementItem.refElement = selectedElement;
-                        return newElementItem;
-                    }
+                      int tryCount = _tryCount;
+                      while (tryCount > 0)
+                      {
+                          IWebElement selectedElement = _activeWebDriverObj.FindElement(By.ClassName(Classname));
+                          if (selectedElement != null)
+                          {
+                              ElementItem newElementItem = new ElementItem();
+                              newElementItem.ElementFindMap.Add(HtmlFindMapType.byClassName, Classname);
+                              newElementItem.ElementTag = selectedElement.TagName;
+                              newElementItem.refElement = selectedElement;
+                              return newElementItem;
+                          }
+                          else
+                          {
+                              Thread.Sleep(_retryEachTime);
+                              tryCount--;
+                          }
+                      }
+
                     return null;
                 }
                 else
@@ -260,16 +321,26 @@ namespace Buffalo.Core.ElementActions
             {
                 if (ID != "" && refElementItem != null)
                 {
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.Id(ID));
-                    if (selectedElement != null)
-                    {
-                        if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byTag))
-                            refElementItem.ElementFindMap.Add(HtmlFindMapType.byID, ID);
-                        else
-                            refElementItem.ElementFindMap[HtmlFindMapType.byID] = ID;
-                        refElementItem.ElementTag = selectedElement.TagName;
-                        refElementItem.refElement = selectedElement;
-                    }
+                      int tryCount = _tryCount;
+                      while (tryCount > 0)
+                      {
+                          IWebElement selectedElement = _activeWebDriverObj.FindElement(By.Id(ID));
+                          if (selectedElement != null)
+                          {
+                              if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byTag))
+                                  refElementItem.ElementFindMap.Add(HtmlFindMapType.byID, ID);
+                              else
+                                  refElementItem.ElementFindMap[HtmlFindMapType.byID] = ID;
+                              refElementItem.ElementTag = selectedElement.TagName;
+                              refElementItem.refElement = selectedElement;
+                              break;
+                          }
+                          else
+                          {
+                              Thread.Sleep(_retryEachTime);
+                              tryCount--;
+                          }
+                      }
                 }
             }
             catch
@@ -283,14 +354,23 @@ namespace Buffalo.Core.ElementActions
             {
                 if (ID != "")
                 {
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.Id(ID));
-                    if (selectedElement != null)
+                    int tryCount = _tryCount;
+                    while (tryCount > 0)
                     {
-                        ElementItem newElementItem = new ElementItem();
-                        newElementItem.ElementFindMap.Add(HtmlFindMapType.byID, ID);
-                        newElementItem.ElementTag = selectedElement.TagName;
-                        newElementItem.refElement = selectedElement;
-                        return newElementItem;
+                        IWebElement selectedElement = _activeWebDriverObj.FindElement(By.Id(ID));
+                        if (selectedElement != null)
+                        {
+                            ElementItem newElementItem = new ElementItem();
+                            newElementItem.ElementFindMap.Add(HtmlFindMapType.byID, ID);
+                            newElementItem.ElementTag = selectedElement.TagName;
+                            newElementItem.refElement = selectedElement;
+                            return newElementItem;
+                        }
+                        else
+                        {
+                            Thread.Sleep(_retryEachTime);
+                            tryCount--;
+                        }
                     }
                     return null;
                 }
@@ -309,16 +389,28 @@ namespace Buffalo.Core.ElementActions
             {
                 if (Tag != "" && refElementItem != null)
                 {
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.TagName(Tag));
-                    if (selectedElement != null)
+                    int tryCount = _tryCount;
+                    while (tryCount > 0)
                     {
-                        if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byTag))
-                            refElementItem.ElementFindMap.Add(HtmlFindMapType.byTag, Tag);
+                        IWebElement selectedElement = _activeWebDriverObj.FindElement(By.TagName(Tag));
+                        if (selectedElement != null)
+                        {
+                            if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byTag))
+                                refElementItem.ElementFindMap.Add(HtmlFindMapType.byTag, Tag);
+                            else
+                                refElementItem.ElementFindMap[HtmlFindMapType.byTag] = Tag;
+                            refElementItem.ElementTag = selectedElement.TagName;
+                            refElementItem.refElement = selectedElement;
+                            break;
+
+                        }
                         else
-                            refElementItem.ElementFindMap[HtmlFindMapType.byTag] = Tag;
-                        refElementItem.ElementTag = selectedElement.TagName;
-                        refElementItem.refElement = selectedElement;
+                        {
+                            Thread.Sleep(_retryEachTime);
+                            tryCount--;
+                        }
                     }
+
                 }
             }
             catch
@@ -332,15 +424,24 @@ namespace Buffalo.Core.ElementActions
             {
                 if (Tag != "")
                 {
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.TagName(Tag));
-                    if (selectedElement != null)
-                    {
-                        ElementItem newElementItem = new ElementItem();
-                        newElementItem.ElementFindMap.Add(HtmlFindMapType.byTag, Tag);
-                        newElementItem.ElementTag = selectedElement.TagName;
-                        newElementItem.refElement = selectedElement;
-                        return newElementItem;
-                    }
+                     int tryCount = _tryCount;
+                     while (tryCount > 0)
+                     {
+                         IWebElement selectedElement = _activeWebDriverObj.FindElement(By.TagName(Tag));
+                         if (selectedElement != null)
+                         {
+                             ElementItem newElementItem = new ElementItem();
+                             newElementItem.ElementFindMap.Add(HtmlFindMapType.byTag, Tag);
+                             newElementItem.ElementTag = selectedElement.TagName;
+                             newElementItem.refElement = selectedElement;
+                             return newElementItem;
+                         }
+                         else
+                         {
+                             Thread.Sleep(_retryEachTime);
+                             tryCount--;
+                         }
+                     }
                     return null;
                 }
                 else
@@ -358,16 +459,25 @@ namespace Buffalo.Core.ElementActions
             {
                 if (XPATH != "" && refElementItem!=null)
                 {
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.XPath(XPATH));
-                    if (selectedElement != null)
-                    {
-                        if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byXpath))
-                            refElementItem.ElementFindMap.Add(HtmlFindMapType.byXpath, XPATH);
-                        else
-                            refElementItem.ElementFindMap[HtmlFindMapType.byXpath] = XPATH;
-                        refElementItem.ElementTag = selectedElement.TagName;
-                        refElementItem.refElement = selectedElement;
-                    }                   
+                      int tryCount = _tryCount;
+                      while (tryCount > 0)
+                      {
+                          IWebElement selectedElement = _activeWebDriverObj.FindElement(By.XPath(XPATH));
+                          if (selectedElement != null)
+                          {
+                              if (!refElementItem.ElementFindMap.ContainsKey(HtmlFindMapType.byXpath))
+                                  refElementItem.ElementFindMap.Add(HtmlFindMapType.byXpath, XPATH);
+                              else
+                                  refElementItem.ElementFindMap[HtmlFindMapType.byXpath] = XPATH;
+                              refElementItem.ElementTag = selectedElement.TagName;
+                              refElementItem.refElement = selectedElement;
+                          }
+                          else
+                          {
+                              Thread.Sleep(_retryEachTime);
+                              tryCount--;
+                          }
+                      }
                 }
              }
             catch
@@ -381,14 +491,23 @@ namespace Buffalo.Core.ElementActions
             {
                 if (XPATH != "")
                 {
-                    IWebElement selectedElement = _activeWebDriverObj.FindElement(By.XPath(XPATH));
-                    if (selectedElement != null)
+                    int tryCount = _tryCount;
+                    while (tryCount > 0)
                     {
-                        ElementItem newElementItem = new ElementItem();
-                        newElementItem.ElementFindMap.Add(HtmlFindMapType.byXpath, XPATH);
-                        newElementItem.ElementTag = selectedElement.TagName;
-                        newElementItem.refElement = selectedElement;
-                        return newElementItem;
+                        IWebElement selectedElement = _activeWebDriverObj.FindElement(By.XPath(XPATH));
+                        if (selectedElement != null)
+                        {
+                            ElementItem newElementItem = new ElementItem();
+                            newElementItem.ElementFindMap.Add(HtmlFindMapType.byXpath, XPATH);
+                            newElementItem.ElementTag = selectedElement.TagName;
+                            newElementItem.refElement = selectedElement;
+                            return newElementItem;
+                        }
+                        else
+                        {
+                            Thread.Sleep(_retryEachTime);
+                            tryCount--;
+                        }
                     }
                     return null;
                 }

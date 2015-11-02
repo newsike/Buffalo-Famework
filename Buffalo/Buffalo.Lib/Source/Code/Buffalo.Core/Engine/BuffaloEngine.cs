@@ -21,6 +21,7 @@ namespace Buffalo.Core.Engine
         private WebDriver.WebBrowserDriver _Obj_WebBrowserDriver = new WebDriver.WebBrowserDriver();
 
         private List<Thread> _FetchMessageThreadsPool = new List<Thread>();
+        private List<Thread> _ExecuteThreadsPool = new List<Thread>();
                 
         
         public void StartServices_ASY()
@@ -102,7 +103,7 @@ namespace Buffalo.Core.Engine
                 Core.CodeProcessor.CodeTransmitor.CodeTransmit_Action_FillExistedData(testCase, _Obj_Scaner.CodePool[codeIndex]);
                 if (testCase.SingleInterrupt == true)
                     return;
-            }
+            }            
             _RunningTaskPool.Enqueue(testCase);
         }
 
@@ -117,6 +118,12 @@ namespace Buffalo.Core.Engine
                 }
                 Thread.Sleep(100);
             }
+        }
+
+        public void Action_CallExecuteTestCase(Object activeCase)
+        {
+            Case.BasicTestCase activeBasicCase = (Case.BasicTestCase)activeCase;
+            Action_ExecuteTestCase(activeBasicCase);
         }
 
         public void Action_ExecuteTestCase(Case.BasicTestCase activeCase)
@@ -159,8 +166,9 @@ namespace Buffalo.Core.Engine
                     activeCase.ActiveTestCaseReport.InsertFaildItem(codeIndex, "Faild Execut : Code Line : " + codeIndex, true);
                     return;
                 }
-
             }
+            activeCase.ActionWebBrowserActionsObject.Action_CloseAllWindow();
+            activeCase.ActionWebBrowserActionsObject.Action_Close();
         }
 
         public void Action_InvokeTestCase()
@@ -171,8 +179,10 @@ namespace Buffalo.Core.Engine
                 {
                     Case.BasicTestCase activeCase = _RunningTaskPool.Dequeue();                    
                     if (activeCase != null)
-                    {                       
-                        Action_ExecuteTestCase(activeCase);
+                    {
+                        Thread newThread = new Thread(new ParameterizedThreadStart(Action_CallExecuteTestCase));
+                        _ExecuteThreadsPool.Add(newThread);
+                        newThread.Start(activeCase);
                     }
                 }
                 Thread.Sleep(100);

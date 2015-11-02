@@ -19,6 +19,7 @@ namespace Buffalo.Core.Container
         public const string ImportXML = "ImportXML";
         public const string DataFill = "DataFill";
         public const string DataSet = "DataSet";
+        public const string Analyse = "Analyse";
         public const string Null = "Null";
     }
 
@@ -39,6 +40,7 @@ namespace Buffalo.Core.Container
             _KeyCodePool.Add(KeyWordMap.ImportXML);
             _KeyCodePool.Add(KeyWordMap.DataFill);
             _KeyCodePool.Add(KeyWordMap.DataSet);
+            _KeyCodePool.Add(KeyWordMap.Analyse);            
         }
 
         public bool Checking_KeyCode(string KeyCode)

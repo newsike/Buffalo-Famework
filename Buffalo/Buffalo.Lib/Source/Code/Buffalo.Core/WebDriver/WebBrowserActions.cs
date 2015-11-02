@@ -76,6 +76,7 @@ namespace Buffalo.Core.WebDriver
         public const string Method_Action_WB_Action_GetCurrentWindowHandle = "Action_GetCurrentWindowHandle";
         public const string Method_Action_WB_Action_Action_IsAlert = "Action_IsAlert";
         public const string Method_Action_WB_Action_Action_Wait = "Action_Wait";
+        public const string Method_Action_WB_Action_Action_GetCurrentURL = "Action_GetCurrentURL";
     }
 
     public class WebBrowserActions
@@ -108,9 +109,21 @@ namespace Buffalo.Core.WebDriver
         {
             if(_activeWebDriverObj!=null)
             {
-                _activeWebDriverObj.Navigate().GoToUrl(URL);
+                _activeWebDriverObj.Navigate().GoToUrl(URL);                
             }
-        } 
+        }
+ 
+        public void Action_Close()
+        {
+            try
+            {
+                _activeWebDriverObj.Close();
+            }
+            catch
+            {
+
+            }
+        }
         
         public void Action_CloseWindow(string windowsHandle="")
         {
@@ -127,11 +140,42 @@ namespace Buffalo.Core.WebDriver
             }
         }
 
-        public void Action_SwitchToWindow(string windowsHandle="")
+        public void Action_CloseAllWindow()
         {
             IList<string> allWindowHandles = _activeWebDriverObj.WindowHandles;
-            if(allWindowHandles.Contains(windowsHandle))            
-                _activeWebDriverObj.SwitchTo().Window(windowsHandle);                            
+            foreach (string activeWindowHandle in allWindowHandles)
+            {
+                try
+                {
+                    _activeWebDriverObj.SwitchTo().Window(activeWindowHandle).Close();
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+        }
+
+        public void Action_SwitchToWindow(string windowsHandleTitle="")
+        {
+            IList<string> allWindowHandles = _activeWebDriverObj.WindowHandles;
+            string currentHandle= _activeWebDriverObj.CurrentWindowHandle;
+            foreach(string activeWindowsHandel in allWindowHandles)
+            {
+                _activeWebDriverObj.SwitchTo().Window(activeWindowsHandel);
+                string Title=_activeWebDriverObj.Title;
+                if(Title==windowsHandleTitle)
+                {
+                    return;
+                }
+            }
+            _activeWebDriverObj.SwitchTo().Window(currentHandle);    
+                  
+        }
+
+        public string Action_GetCurrentURL()
+        {
+            return _activeWebDriverObj.Url;
         }
 
         public string Action_GetSourceOfPage(string windowsHandle="")
