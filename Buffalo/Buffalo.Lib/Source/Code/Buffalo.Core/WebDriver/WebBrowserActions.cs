@@ -76,7 +76,11 @@ namespace Buffalo.Core.WebDriver
         public const string Method_Action_WB_Action_GetCurrentWindowHandle = "Action_GetCurrentWindowHandle";
         public const string Method_Action_WB_Action_Action_IsAlert = "Action_IsAlert";
         public const string Method_Action_WB_Action_Action_Wait = "Action_Wait";
+<<<<<<< HEAD
         public const string Method_Action_WB_Action_Action_GetCurrentURL
+=======
+        public const string Method_Action_WB_Action_Action_GetCurrentURL = "Action_GetCurrentURL";
+>>>>>>> origin/master
     }
 
     public class WebBrowserActions
@@ -109,9 +113,21 @@ namespace Buffalo.Core.WebDriver
         {
             if(_activeWebDriverObj!=null)
             {
-                _activeWebDriverObj.Navigate().GoToUrl(URL);
+                _activeWebDriverObj.Navigate().GoToUrl(URL);                
             }
-        } 
+        }
+ 
+        public void Action_Close()
+        {
+            try
+            {
+                _activeWebDriverObj.Close();
+            }
+            catch
+            {
+
+            }
+        }
         
         public void Action_CloseWindow(string windowsHandle="")
         {
@@ -128,6 +144,25 @@ namespace Buffalo.Core.WebDriver
             }
         }
 
+<<<<<<< HEAD
+=======
+        public void Action_CloseAllWindow()
+        {
+            IList<string> allWindowHandles = _activeWebDriverObj.WindowHandles;
+            foreach (string activeWindowHandle in allWindowHandles)
+            {
+                try
+                {
+                    _activeWebDriverObj.SwitchTo().Window(activeWindowHandle).Close();
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+        }
+
+>>>>>>> origin/master
         public void Action_SwitchToWindow(string windowsHandleTitle="")
         {
             IList<string> allWindowHandles = _activeWebDriverObj.WindowHandles;

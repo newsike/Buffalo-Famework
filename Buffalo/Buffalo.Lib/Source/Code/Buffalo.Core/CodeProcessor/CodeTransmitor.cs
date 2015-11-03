@@ -408,12 +408,30 @@ namespace Buffalo.Core.CodeProcessor
                                 break;
                             case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_GetSourceOfPage:
                                 refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_SwitchToWindow);
+<<<<<<< HEAD
                                 break;
                                 
+=======
+                                break;                                
+>>>>>>> origin/master
                             case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_Action_Wait:
                                 refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_Action_Wait);
                                 methodParam = new object[] { activeSelectLine.ParamsPool[paramName] };
                                 refCaseMethodItemObj.ActiveMethod.MethodParams = methodParam;
+<<<<<<< HEAD
+=======
+                                break;
+                            case WebDriver.WebBrowserActionsMap.Method_Action_WB_Action_Action_GetCurrentURL:
+                                if (activeSelectLine.ParamsPool[paramName] != Container.KeyWordMap.Null)
+                                {
+                                    string currentURLDataName = activeSelectLine.ParamsPool[paramName];
+                                    string currentURL = refActiveCase.ActionWebBrowserActionsObject.Action_GetCurrentURL();
+                                    if (refActiveCase.ActiveDataBuffer.ContainsKey(currentURLDataName))
+                                        refActiveCase.ActiveDataBuffer[currentURLDataName] = currentURL;
+                                    else
+                                        refActiveCase.ActiveDataBuffer.Add(currentURLDataName, currentURL);
+                                }
+>>>>>>> origin/master
                                 break;
                         }
                     }
@@ -458,6 +476,7 @@ namespace Buffalo.Core.CodeProcessor
                                 methodParam = new object[] { textParam };
                                 refCaseMethodItemObj.ActiveMethod.MethodParams = methodParam;
                                 break;
+<<<<<<< HEAD
                             case ElementActions.ActionMap.Method_Get_Content:
                                 string datanameParam = "";
                                 datanameParam = activeSelectLine.ParamsPool[paramName];
@@ -468,6 +487,16 @@ namespace Buffalo.Core.CodeProcessor
                                         refActiveCase.ActiveDataBuffer[datanameParam] = contentFromElement;
                                     else
                                         refActiveCase.ActiveDataBuffer.Add(datanameParam, contentFromElement);
+=======
+                            case ElementActions.ActionMap.Method_Get_Content:                                
+                                refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(ElementActions.ActionMap.Method_Get_Content_Store);
+                                if (activeSelectLine.ParamsPool[paramName] != Container.KeyWordMap.Null)
+                                {
+                                    string datanameParam = "";
+                                    datanameParam = activeSelectLine.ParamsPool[paramName];
+                                    methodParam = new object[] { refActiveCase, datanameParam };
+                                    refCaseMethodItemObj.ActiveMethod.MethodParams = methodParam;
+>>>>>>> origin/master
                                 }
                                 break;
                         }
@@ -483,6 +512,7 @@ namespace Buffalo.Core.CodeProcessor
 
         public static void CodeTransmit_Action_AnalyseContent(Case.CaseMethodItem refCaseMethodItemObj, Case.BasicTestCase refActiveCase, CodeLine activeSelectLine)
         {
+<<<<<<< HEAD
             if (refCaseMethodItemObj != null && activeSelectLine.KeyCode == Container.KeyWordMap.Select)
             {
                 if(activeSelectLine.ParamsPool.ContainsKey("action"))
@@ -495,6 +525,29 @@ namespace Buffalo.Core.CodeProcessor
                     }
                 }
                     
+=======
+            if (refCaseMethodItemObj != null && activeSelectLine.KeyCode == Container.KeyWordMap.Analyse)
+            {
+                if(activeSelectLine.ParamsPool.ContainsKey("action"))
+                {
+                    refCaseMethodItemObj.Index = activeSelectLine.CodeIndex;
+                    refCaseMethodItemObj.ActiveMethod = new ElementActions.MethodItem();
+                    refCaseMethodItemObj.ActiveMethod.ActiveType = typeof(Analyse.AnalyseContent);
+                    refActiveCase.ActiveCaseMethodPool.Add(refCaseMethodItemObj.Index, refCaseMethodItemObj);
+                    object[] methodParam;
+                    string actionValue = activeSelectLine.ParamsPool["action"];
+                    if (actionValue == Analyse.AnalyseMap.Check_Equal_StrContent)
+                    {
+                        string sourceDataName = activeSelectLine.ParamsPool["sourcedata"];
+                        string objectDataName = activeSelectLine.ParamsPool["objectdata"];
+                        bool isInterupt = activeSelectLine.ParamsPool["isinterupt"] == "1" ? true : false;
+                        refCaseMethodItemObj.ActiveMethod.ActiveMethod = refCaseMethodItemObj.ActiveMethod.ActiveType.GetMethod(ElementActions.ActionMap.Method_Action_SetText);
+                        methodParam = new object[] { refActiveCase, sourceDataName, objectDataName, isInterupt, activeSelectLine };
+                        refCaseMethodItemObj.ActiveMethod.MethodParams = methodParam;
+                        refActiveCase.ActiveCaseMethodPool.Add(refCaseMethodItemObj.Index, refCaseMethodItemObj);
+                    }
+                }                   
+>>>>>>> origin/master
                     
             }
         }

@@ -40,6 +40,7 @@ namespace Buffalo.Core.Container
             _KeyCodePool.Add(KeyWordMap.ImportXML);
             _KeyCodePool.Add(KeyWordMap.DataFill);
             _KeyCodePool.Add(KeyWordMap.DataSet);
+            _KeyCodePool.Add(KeyWordMap.Analyse);            
         }
 
         public bool Checking_KeyCode(string KeyCode)

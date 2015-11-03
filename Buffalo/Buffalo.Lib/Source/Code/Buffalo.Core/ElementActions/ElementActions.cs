@@ -88,9 +88,10 @@ namespace Buffalo.Core.ElementActions
         public const string Method_Get_IsDisplayed = "Get_IsDisplayed";
         public const string Method_Action_SelectOptionByText = "Action_SelectOptionByText";
         public const string Method_Action_SelectOptionByIndex = "Action_SelectOptionByIndex";
-        public const string Method_Action_SelectOptionByValue = "Action_SelectOptionByValue"; 
+        public const string Method_Action_SelectOptionByValue = "Action_SelectOptionByValue";
+        public const string Method_Get_Content_Store = "Get_Content_Store";
 
-    }
+    }    
 
     public class ElementActions
     {
@@ -128,6 +129,15 @@ namespace Buffalo.Core.ElementActions
         public string Get_Content()
         {
             return _selectedElementItem.refElement.Text;            
+        }
+
+        public void Get_Content_Store(Case.BasicTestCase refTestCase,string DataPonitName)
+        {
+            string value = _selectedElementItem.refElement.Text;
+            if (refTestCase.ActiveDataBuffer.ContainsKey(DataPonitName))
+                refTestCase.ActiveDataBuffer[DataPonitName] = value;
+            else
+                refTestCase.ActiveDataBuffer.Add(DataPonitName, value);
         }
 
         public bool Get_IsEnabled()

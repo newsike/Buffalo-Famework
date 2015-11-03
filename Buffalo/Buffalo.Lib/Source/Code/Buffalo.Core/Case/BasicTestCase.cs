@@ -123,6 +123,12 @@ namespace Buffalo.Core.Case
             get;
         }
 
+        public List<string> ActiveMailList
+        {
+            set;
+            get;
+        }
+
         public BasicTestCase()
         {
             ActiveCaseContentPool = new Dictionary<int, CaseContentItem>();
@@ -133,6 +139,7 @@ namespace Buffalo.Core.Case
             ActiveLoopPool = new List<LoopItem>();
             ActiveTestCaseReport = new CaseReport();
             ActiveDataBuffer = new Dictionary<string, string>();
+            ActiveMailList = new List<string>();
         }
         
         public string CaseName
